@@ -14,9 +14,11 @@ const int success_led = 7;
 const int put_trash_push_button = 6;
 
 int is_connected = 0;
+int buttonState = 0;          //variables for reading the pushbutton status
 
 void setup() {
   dispenseServo.attach(6);
+  dispenseServo.write(90);
   Serial.begin(9600);// serial monitor stuff
   bluetooth.begin(9600); // Bluetooth connection
 
@@ -30,8 +32,23 @@ void setup() {
 }
 
 void loop() {
-  if(bluetooth.available()){
-    Serial.write("")
+  buttonState = digitalRead(put_trash_push_button); //read the state of the pushbutton value
+
+  if(bluetooth.available() >0 && is_connected<0){
+    
+    Serial.println("Connection Etablished");
+    digitalWrite(connection_led, HIGH);
+    is_connected = 1;
+  }
+  if(is_connected == 1){
+    if(buttonState == HIGH){
+      dispenseServo.write(180);
+      digitalWrite(success_led, HIGH); 
+      bluetooth.write("+1");
+      delay(1500);
+      digitalWrite(success_led, LOW); 
+      dispenseServo.write(90);
+    }
   }
 
 }
